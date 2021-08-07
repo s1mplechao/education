@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.mz.stu.mapper.CourseMapper">
+
+	<select id="queryAll"
+			resultType="Course">
+		select * from t_course
+	</select>
+
+	<sql id="whereSql">
+		<where>
+			<if test="name != null and name != ''">
+				and tc.name like concat('%',#{name},'%')
+			</if>
+		</where>
+	</sql>
+
+	<!--分页-->
+	<select id="queryTotal" parameterType="CourseQuery"
+			resultType="java.lang.Long">
+		select count(*) from t_course
+		<include refid="whereSql"></include>
+	</select>
+
+	<select id="queryData" parameterType="CourseQuery"
+			resultMap="CourseMap">
+		select tc.*,u.id uid, u.username uname
+		from t_course tc
+		join t_user u on tc.tid = u.id
+		<include refid="whereSql"></include>
+		order by id desc
+		limit #{offset},#{pageSize}
+	</select>
+
+	<resultMap id="CourseMap" type="Course">
+		<id property="id" column="id"></id>
+		<result property="name" column="name"></result>
+		<result property="createTime" column="createTime"></result>
+		<result property="tid" column="tid"></result>
+		<result property="user.id" column="uid"></result>
+		<result property="user.username" column="uname"></result>
+	</resultMap>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

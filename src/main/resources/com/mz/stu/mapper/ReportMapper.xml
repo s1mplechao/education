@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.mz.stu.mapper.ReportMapper">
+
+	<select id="courseAvgReport" resultType="com.mz.stu.vo.ReportVo">
+		select c.name ,avg(s.score) avgScore
+		from t_score s
+		left join  t_course c on s.courseid = c.id
+		join t_user u on  s.userid = u.id
+		group by c.name
+	</select>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN"
+ "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="com.mz.stu.mapper.ScoreMapper">
+
+	<select id="queryAll"
+			resultType="Score">
+		select * from t_score
+	</select>
+
+	<sql id="whereSql">
+		<where>
+			<if test="courseid != null and courseid != ''">
+				and s.courseid like concat('%',#{courseid},'%')
+			</if>
+		</where>
+	</sql>
+
+	<!--分页-->
+	<select id="queryTotal" parameterType="ScoreQuery"
+			resultType="java.lang.Long">
+		select count(*)
+		from t_score s
+		join  t_course c on s.courseid = c.id
+		join t_user u on  s.userid = u.id
+		<include refid="whereSql"></include>
+	</select>
+
+	<select id="queryData" parameterType="ScoreQuery"
+			resultMap="ScoreMap">
+		select s.*,c.id cid,c.name cname,u.id uid ,u.username
+		from t_score s
+		join  t_course c on s.courseid = c.id
+		join t_user u on  s.userid = u.id
+		<include refid="whereSql"></include>
+		order by id desc
+		limit #{offset},#{pageSize}
+	</select>
+	<resultMap id="ScoreMap" type="Score">
+		<id property="id" column="id"></id>
+		<result property="score" column="score"></result>
+		<result property="userid" column="userid"></result>
+		<result property="courseid" column="courseid"></result>
+		<result property="user.id" column="uid"></result>
+		<result property="user.username" column="username"></result>
+		<result property="course.id" column="cid"></result>
+		<result property="course.name" column="cname"></result>
+	</resultMap>
+
+	<!-- 添加成绩 -->
+	<insert id="addScore" parameterType="Score" >
+		insert into t_score(score,courseid,userid)
+		values (#{score},#{courseid},#{userid})
+	</insert>
+
+	<delete id="deleteScore" parameterType="java.lang.Long" >
+		delete from t_score where id=#{id}
+	</delete>
+
+	<!-- 批量删除 batchRemove(ids)-->
+	<delete id="batchRemove" parameterType="java.util.List">
+		delete from t_score where id in
+		<foreach collection="list" index="index" item="item"
+				 separator="," open="(" close=")">
+			#{item,jdbcType=BIGINT}
+		</foreach>
+	</delete>
+
+</mapper>
+
+
+
+
+
+
+
+
+
+
+
+
